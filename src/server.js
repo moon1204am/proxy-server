@@ -20,8 +20,13 @@ const instance = axios.create({
     }
 })
 
+// CORS enabled for specific origin
 const cors = require('cors');
-app.use(cors());
+var corsOptions = {
+    origin: `${process.env.ORIGIN}`,
+    optionsSuccessStatus: 200
+  }
+app.use(cors(corsOptions));
 
 app.post('/order', async (req, res) => {
     const orderDetails = req.body;
