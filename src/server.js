@@ -11,13 +11,18 @@ const result = require('dotenv-safe').config({
 const express = require('express');
 const app = express();
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
 const axios = require('axios');
 const instance = axios.create({
     baseURL: 'https://api.playground.klarna.com',
     headers: {
         'Content-type': "application/json",
-        'Authorization': `Basic ${process.env.CREDENTIALS}`
-    }
+        'Authorization': `Basic ${Buffer.from(
+            `${process.env.KCO_USERNAME}:${process.env.KCO_PASSWORD}`
+          ).toString('base64')}`
+    },
 })
 
 // CORS enabled for specific origin
@@ -39,6 +44,12 @@ app.get('/order/:order_id', async (req, res) => {
     res.json(await response.data);
 })
 
-app.listen(process.env.SERVER_PORT, () => {
-    console.log("Listening on port " + process.env.SERVER_PORT);
-})
+const server = app.listen(
+    process.env.SERVER_PORT,
+    process.env.SERVER_HOST,
+    () => {
+      console.log(
+          `Server is up at ${server.address().address}:${server.address().port}`
+      );
+    }
+);
